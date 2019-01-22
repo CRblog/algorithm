@@ -10,6 +10,7 @@ using namespace std;
 
 
 //比冒泡排序复杂度更低，消耗时间更少
+//如果需要排序的数组是顺序或者逆序，那么需要的时间就会很长，随机数快排效率会更高
 int a[101],n;
 void quicksort(int left,int right){//快排
 
