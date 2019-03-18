@@ -24,12 +24,13 @@ void SeqListDestory(SeqList *pSeqList){
 	pSeqList->capacity = 0;
 	pSeqList->size = 0;
 }
-
-void SeqListPushBack(SeqList *pSeqList,SLDataType value){//Î²²å
+//Î²²åO(1)
+void SeqListPushBack(SeqList *pSeqList,SLDataType value){
 	pSeqList->array[pSeqList->size] = value;
 	pSeqList->size++;
 }
-void SeqListPushFront(SeqList *qSeqlist,SLDataType value){//Í·²å
+//Í·²åO(n)
+void SeqListPushFront(SeqList *qSeqlist,SLDataType value){
 		for(int i=pSeqList->size;i>=1;i--){
 			pSeqList->array[i] = pSeqList->array[i-1];
 		}
