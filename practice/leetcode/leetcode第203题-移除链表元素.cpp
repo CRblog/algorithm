@@ -24,7 +24,47 @@ while(cur->next){
     else{
         cur = cur -> next;
     }
-
-
 }return head;
 }
+
+
+
+
+
+if(head==NULL)
+{
+	return ;
+}
+
+//先不管第一个结点
+struct ListNode *cur = head;
+while(cur->next != NULL)
+{
+	if(cur->next->value = val)
+	{
+		struct ListNode *next = cur->next->next;
+		free(cur->next);
+		cur->next = next;
+	}
+	else
+	{
+		cur=cur->next;
+	}
+	if(head->value=val)
+	{
+		struct ListNode *newHead
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
