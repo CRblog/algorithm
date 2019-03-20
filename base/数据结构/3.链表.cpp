@@ -22,13 +22,15 @@ int main(){
 
 #pragma once
 typedef int SListDataType
-定义的不是链表的数据结构，而是链表中一个结点的结构体
+//定义的不是链表的数据结构，而是链表中一个结点的结构体
 typedef struct ListNode{
 	SListDataType value;    //保存的值
 	struct ListNode *next;  //保存下一个结点的地址
+	
+	//不能用 Node *next  (因为Node还没定义)
 } Node;
 
-
+//表示链表（只需要保存链表的第一个地址）
 typedef struct SList{
 	Node *first;            //Node *head;
 }SList;//当first==NULL 表示是个空链表
@@ -44,13 +46,13 @@ void Test()
 	SListInit();
 }
 //1头插
-申请一个内存
-void SListPushFront(SList *s SListDataType v)
+//申请一个内存
+void SListPushFront(SList *s,SListDataType v)
 {
-	Node *node = (Node *)malloc(sizeof(Node));
-	node -> value = v;
+	Node *node = (Node *)malloc(sizeof(Node));//先在堆上申请空间
+	node -> value = v;      //新空间的值变成V，指针指向s的头结点
 	node -> next = s->first;
-	s->first = node;
+	s->first = node;        //头结点变成node的地址
 }
 //尾插
 void SListPushBack(SList *s SListDataType v)
