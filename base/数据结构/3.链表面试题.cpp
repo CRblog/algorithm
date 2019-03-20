@@ -94,6 +94,7 @@ Node * Reverse(Node *head)
 		Node *next = cur->next;
 		
         cur->next = prev;
+        
         prev = cur;
         cur = next;
 }
