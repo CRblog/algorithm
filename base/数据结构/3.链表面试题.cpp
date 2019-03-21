@@ -1,3 +1,22 @@
+203  移除链表元素
+struct ListNode* removeElements(struct)
+{
+	if(head == NULL)
+	{
+		return NULL;
+	}
+	///先不管第一个结点的情况
+	struct ListNode *cur = head;
+	while(cur->next !=NULL){
+		if(cur->next->val = val){
+			struct ListNode *next = cur;
+		}
+	}
+}
+
+
+
+
 876快慢指针
 {
 struct ListNode *fast = head;
@@ -80,24 +99,28 @@ else
 
 
 
-链表的反转
+206  链表的反转//三指针法
    1->2->3->4->5
-
-p2->next=p1;
-Node * Reverse(Node *head)
+p3的作用，p2的next已经被改变，p3用来指向p2next的地址,下一次改变的方式
 {
-	Node prev = NULL;
-	Node *cur = head;
-	
-	while(cur!=NULL)
+	if(head == NULL||head->next == NULL)
 	{
-		Node *next = cur->next;
-		
-        cur->next = prev;
-        
-        prev = cur;
-        cur = next;
-}
+		return head;
+	}
+struct ListNode *p1 = NULL;         ///
+struct ListNode *p2 = head;
+struct ListNode *p3 = head->next;
+	while(p2!=NULL)
+	{
+		p2->next = p1;
+		p1 = p2;
+		p2 = p3;
+		if(p3!=NULL)
+		{
+			p3 = p3->next;
+		}
+	}
+	return p1;
 }
 
 
@@ -140,19 +163,93 @@ for(ListNode *c = pHead;c!= NULL;c=c->next)
 
 
 删除重复结点
+需要一个虚结点，用来当前驱结点
+比较-
+1不等
+    往后走
+2相等
+    判断后面的是否相等，判断后面是否为空
 
+//
 ListNode *deleteDuplication(ListNode* pHead){
+	if(pHead==NULL)
+	{
+		return NULL;
+	}
 	ListNode *fake = (ListNode *)malloc(sizeof(ListNode));
 	fake->next = pHead
 	ListNode *prev = fake;
-	ListNode *p1 = pHead;
-	ListNode *p2 = pHead->next;
+	ListNode *p1 = pHead;       //p1和p2负责进行val的比较
+	ListNode *p2 = pHead->next;  //p2还有个职责，找第一个不相等的结点
 	
 	while(p2!=NULL){
-		if()
+		if(p1->val!=p2->val)
+		{
+			pre = p1;
+			p1 = p2;
+			p2 = p2->next;
+		}
+		else{
+			while(p2!=NULL&&p2->val == p1->val){
+				p2 = p2->next;
+ 			}
+ 			//删除的就是[p1,p2)
+ 			prev->next = p2;
+ 			if(p2!=NULL)
+ 			{
+ 				p2 = p2->next;
+			}
+		}
 	}
+	pHead =fake->next;
+	free(fake);
 }
 
+
+
+//牛客  分割链表
+ListNode* partition (ListNode* pHead,int x)
+{
+	ListNode *small = NULL;
+	ListNode *small_last = NULL;
+	LsitNode *big = NULL;
+	ListNode *big_last = NULL;
+	for(ListNode *c = pHead;c!=NULL;c=c->next){
+		if(c->val < x){
+			if(small_last == NULL){
+				small = small_last = c;
+			}
+			else
+			{
+				small_last->next = c;
+				small_last = c;
+			}
+		}
+		else{
+			if(big_last==NULL){
+				big = big_last=c;
+			}
+			else{
+				big_last->next = c;
+				big_last = c;
+			}
+		}
+	}
+	if(small_last!=NULL){
+		small_last->next  =big;
+	}
+	if(big_last!=NULL){
+		big_last->next = NULL
+	}
+	if(small!=NULL){
+		return small;
+	}
+	else
+	{
+		return big;
+	}
+	return small;
+}
 
 
 
