@@ -212,7 +212,7 @@ ListNode* partition (ListNode* pHead,int x)
 {
 	ListNode *small = NULL;
 	ListNode *small_last = NULL;
-	LsitNode *big = NULL;
+	ListNode *big = NULL;
 	ListNode *big_last = NULL;
 	for(ListNode *c = pHead;c!=NULL;c=c->next){
 		if(c->val < x){
