@@ -157,7 +157,7 @@ linux网络编程
       
       reboot  重启
       shutdown -h now 立即关机
-      halt      立即关机
+      halt      立即关机 
 
 shell:
     命令行解释器--桥梁
