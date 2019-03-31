@@ -10,22 +10,26 @@ int main()
 	cin>>n;
 	getchar();
 	cin.getline(s,1003);
+	//cout<<s<<endl;
 	int len = strlen(s);
-	int m = len/n+1;
+	int m = len/n;
+	if(len%n!=0)    m++;
+	num=0;
 	for(int i=m-1;i>=0;i--)
 	{
 		for(int j=0;j<n;j++)
 		{
+
+
 			if(num<=len-1)
 			{
-				t[j][i] = s[num];
-				num++;
+				t[j][i] = s[num++];
+
 			}
-			else if(num>len-1&&num<n*(m-1))
+			else
 			{
 				t[j][i] =' ';
 			}
-			
 		}
 	}
 	for(int i=0;i<n;i++)
