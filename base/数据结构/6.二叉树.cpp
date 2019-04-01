@@ -31,6 +31,7 @@ void PreorderTraversak(Node *root){
 	PreorderTraversal(root->left);
 	PreorderTraversal(root->right);
 }
+//中序遍历
 void Inorder(Node *root)
 {
 	if(root== NULL){//空树
@@ -50,15 +51,18 @@ void Size(Node *root)
 	}
 	int left = Size2(root->left);
 	int right = Size2(root->left);
-	return left+right=1;
+	return left+right+1;
 }
 //叶子结点
 int LeafSize(Node *root)
 {   //空树：return 0;
 	//一个结点：return 1;
-	if(root == NULL){return 0;
+	if(root == NULL)
+	{
+		return 0;
 	}
-	if(root->left == NULL&&root->right == NULL){
+	if(root->left == NULL&&root->right == NULL)
+	{
 		return 1;
 	}
 	int left = LeafSize(root->left);
