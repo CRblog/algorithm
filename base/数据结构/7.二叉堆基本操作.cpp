@@ -50,7 +50,6 @@ void AdjustDown(int array[],int size,int root){
 	int t = array[root];
 	array[root] = array[min];
 	array[min] = t;
-	
 	root = min;
 	}
 }
