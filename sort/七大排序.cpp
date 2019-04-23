@@ -155,7 +155,7 @@ void merge(int* array, int first, int mid, int end) {
   free(leftgroup);
   free(rightgroup);
 }
-//¶ÑÅÅÐò
+//¶ÑÅÅÐò,´ó¶Ñ
 void Creatheap(int array[], int size)
 {
     for (int i = (size - 2) / 2; i >= 0; i--)
