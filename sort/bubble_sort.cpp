@@ -5,12 +5,12 @@ int length = sizeof(array)/sizeof(array[0]);
 
 void bubblesort(int* array){
   for(int i=0;i<length;i++)
-    //每次会将最大的放到最后，所以数组多大就有多少个循环
+    //ÿ�λὫ���ķŵ����������������ж��ٸ�ѭ��
   {
     for(int j = 0;j<length-i;j++)
-      //每次循环都只用进行到第length-i次，因为循环每进行一次，就会有一个最后的值已经排好不需要再移动
+      //ÿ��ѭ����ֻ�ý��е���length-i�Σ���Ϊѭ��ÿ����һ�Σ��ͻ���һ������ֵ�Ѿ��źò���Ҫ���ƶ�
         {
-            if(array[j]>array[j+1])  //交换值就可以
+            if(array[j]>array[j+1])  //����ֵ�Ϳ���
             {
               int tmp = array[j];
               array[j] = array[j+1];
@@ -28,3 +28,4 @@ int main()
   bubblesort(array);
   return 0;
 }
+
