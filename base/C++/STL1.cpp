@@ -13,8 +13,10 @@ int main()
 {
   int a =0,b=1;
   double aa = 1.11,b=2.22;
-  Swap(a,b);   //Swap<int>
-  Swap(aa,bb);//Swap<double>
+  Swap(a,b);
+   //Swap<int>
+  Swap(aa,bb);
+  //Swap<double>
 }
 
 
