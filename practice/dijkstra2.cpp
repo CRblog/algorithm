@@ -6,8 +6,8 @@
 #include<cstdlib>
 using namespace std;
 
-//输出到1点的最短路径
-//5 6
+//输出到 1点的最短路径
+//5    6
 //1 2 5
 //1 3 8
 //2 3 1
