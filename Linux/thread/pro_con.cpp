@@ -1,8 +1,8 @@
 /*
- *ç”Ÿäº§è€…ä¸æ¶ˆè´¹è€…æ¨¡å‹
- å®ç°ï¼š
- 1.å®ç°çº¿ç¨‹å®‰å…¨çš„é˜Ÿåˆ—ï¼Œå¯¹å¤–æä¾›çº¿ç¨‹å®‰å…¨çš„æ•°æ®å…¥é˜Ÿå’Œå‡ºé˜Ÿæ“ä½œ
- 2.åˆ›å»ºçº¿ç¨‹ï¼Œåˆ†åˆ«ä½œä¸ºç”Ÿäº§è€…ä¸æ¶ˆè´¹è€…æ•°æ®å…¥é˜Ÿæˆ–æ•°æ®å‡ºé˜Ÿ
+ *Éú²úÕßÓëÏû·ÑÕßÄ£ĞÍ
+ ÊµÏÖ£º
+ 1.ÊµÏÖÏß³Ì°²È«µÄ¶ÓÁĞ£¬¶ÔÍâÌá¹©Ïß³Ì°²È«µÄÊı¾İÈë¶ÓºÍ³ö¶Ó²Ù×÷
+ 2.´´½¨Ïß³Ì£¬·Ö±ğ×÷ÎªÉú²úÕßÓëÏû·ÑÕßÊı¾İÈë¶Ó»òÊı¾İ³ö¶Ó
  *
  * */
 #include<iostream>
@@ -10,7 +10,7 @@
 #include<pthread.h>
 using namespace std;
 
-#define MAX_QUEUE 10
+#define MAX_QUEUE 10          //×î´ó½Úµã
 
 class BlockQueue
 {
@@ -21,62 +21,63 @@ class BlockQueue
         pthread_cond_init(&_cond_pro,NULL);
       }
       ~BlockQueue(){
-      pthread_mutex_destroy(&_mutex);
-      pthread_cond_destroy(&_cond_con);
-      pthread_cond_destroy(&_cond_pro);
+      pthread_mutex_destroy(&_mutex);      //Ïú»ÙËø
+      pthread_cond_destroy(&_cond_con);   //Ïû·ÑÕßÏú»Ù
+      pthread_cond_destroy(&_cond_pro);   //Éú²úÕßÏú»Ù
       }
-      void QueuePush(int data){      
-        QueueLock();
-        while(QueueIsFull()){
+      void QueuePush(int data){         //Èë¶ÓÁĞ
+        QueueLock();                    //²Ù×÷Ç°ÏÈ¼ÓËø
+        while(QueueIsFull())       //Ê×ÏÈÅĞ¶Ï¶ÓÁĞÓĞÃ»ÓĞÂú£¬ÂúÁËµÄ»°¾ÍĞèÒªÉú²úÕßÒ»Ö±µÈ´ı
+		{
           ProWait();
         }
-        _queue.push(data);
-        ConWakeUp();
-        QueueUnLock();
+        _queue.push(data);          //Èç¹ûÃ»Âú£¬¾Í¿ªÊ¼Éú²ú£¬½«Êı¾İÈë¶Ó
+        ConWakeUp();               //²Ù×÷Íê³É£¬»½ĞÑÏû·ÑÕß
+        QueueUnLock();             //½âËø
       }
-      void QueuePop(int *data){
-        QueueLock();
-        while(QueueIsEmpty()){
+      void QueuePop(int *data){          //³ö¶ÓÁĞµÄÇé¿ö
+        QueueLock();                 //Ö´ĞĞÖ®Ç°¼ÓËø
+        while(QueueIsEmpty()){     //¶ÓÁĞÎª¿Õ¾ÍÏÈµÈ´ı
           ConWait();
         }
-        *data = _queue.front();
+        *data = _queue.front();   //²»Îª¿Õ-->½«Êı¾İ±£´æÏÂÀ´£¬³ö¶ÓÁĞ
         _queue.pop();
-        ConWakeUp();
-        QueueUnLock();
+        ProWakeUp();     //»½ĞÑÉú²úÕß£¨ĞèÒªÉú²ú²úÆ·ÁË£©
+        QueueUnLock();   //½âËø
 
 
       }
     private:
-      void QueueLock(){
+      void QueueLock(){            //¼ÓËø
         pthread_mutex_lock(&_mutex);
-      }         //åŠ é”
-      void QueueUnLock(){
+      }
+      void QueueUnLock(){           //½âËø
         pthread_mutex_unlock(&_mutex);
-      }       //è§£é”
-      void ConWait(){
+      }
+      void ConWait(){              //Ïû·ÑÕßµÈ´ı
         pthread_cond_wait(&_cond_con,&_mutex);
-      }           //æ¶ˆè´¹è€…ç­‰å¾…
-      void ConWakeUp(){
+      }
+      void ConWakeUp(){                   //»½ĞÑÏû·ÑÕß
         pthread_cond_signal(&_cond_con);
-      }         //å”¤é†’æ¶ˆè´¹è€…
-      void ProWait(){
+      }
+      void ProWait(){                       //Éú²úÕßµÈ´ı
         pthread_cond_wait(&_cond_pro,&_mutex);
-      }           //ç”Ÿäº§è€…ç­‰å¾…
-      void ProWakeUp(){
+      }
+      void ProWakeUp(){       //»½ĞÑÉú²úÕß
         pthread_cond_signal(&_cond_pro);
-      }         //å”¤é†’ç”Ÿäº§è€…
-      bool QueueIsFull(){
-        return (_capacity == _queue.size());// å®¹é‡ç­‰äºå…ƒç´ å¤§å°åˆ™è¡¨ç¤ºé˜Ÿåˆ—æ»¡äº†
-      }       //åˆ¤æ–­é˜Ÿåˆ—æ˜¯å¦æ»¡äº†
-      bool QueueIsEmpty(){
+      }
+      bool QueueIsFull(){          //ÅĞ¶Ï¶ÓÁĞÊÇ·ñÂúÁË
+        return (_capacity == _queue.size());// ÈİÁ¿µÈÓÚÔªËØ´óĞ¡Ôò±íÊ¾¶ÓÁĞÂúÁË
+      }
+      bool QueueIsEmpty(){               //ÅĞ¶Ï¶ÓÁĞÊÇ·ñÎª¿Õ
         return _queue.empty();
-      }      //åˆ¤æ–­é˜Ÿåˆ—æ˜¯å¦ä¸ºç©º
+      }
     private:
-      queue<int> _queue;
-      int _capacity;
-      pthread_mutex_t _mutex;
-      pthread_cond_t _cond_pro;
-      pthread_cond_t _cond_con;
+      queue<int> _queue;              //¶¨Òå¶ÓÁĞ
+      int _capacity;                  //¶ÓÁĞ½ÚµãµÄ×î´óÊıÁ¿
+      pthread_mutex_t _mutex;        //¶¨ÒåËø
+      pthread_cond_t _cond_pro;      //¶¨ÒåÉú²úÕß
+      pthread_cond_t _cond_con;      //¶¨ÒåÏû·ÑÕß
 };
 void *thr_consumer(void *arg)
 {
@@ -92,6 +93,7 @@ void *thr_consumer(void *arg)
 }
 int i = 0;
 pthread_mutex_t mutex;
+
 void *thr_productor(void *arg){
   BlockQueue *q = (BlockQueue*)arg;
   pthread_mutex_init(&mutex,NULL);
@@ -114,7 +116,7 @@ int main(int argc,char *argv[])
     ret = pthread_create(&ctid[i],NULL,thr_consumer,(void*)&q);
     if(ret!=0)
     {
-      cout<<"pthread create error\n";
+      cout<<"pthread create error"<<endl;
       return -1;
     }
   }
@@ -122,11 +124,11 @@ int main(int argc,char *argv[])
   {
     ret = pthread_create(&ptid[i],NULL,thr_productor,(void*)&q);
     if(ret!=0){
-      cout<<"pthread create error\n";
+      cout<<"pthread create error"<<endl;
       return -1;
     }
   }
-  for(i=0;i<4;i++){
+  for(i = 0;i<4;i++){
     pthread_join(ctid[i],NULL);
   }
   for(i=0;i<4;i++)
@@ -135,3 +137,4 @@ int main(int argc,char *argv[])
   }
   return 0;
 }
+
