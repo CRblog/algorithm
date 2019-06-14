@@ -1,7 +1,7 @@
 #include<iostream>
 #include<string>
 using namespace std;
-
+//ÐÞ¸ÄÇ°
 int main()
 {
     int n,len,count;
