@@ -1,4 +1,4 @@
-//UDPç‰ˆæœ¬çš„
+//UDP°æ±¾µÄ
 #include<sys/socket.h>
 #include<sys/types.h>
 #include<error.h>
@@ -9,35 +9,35 @@
 #include<unistd.h>
 int main()
 {
-  //1.å…ˆåˆ›å»ºä¸€ä¸ªsocket
-  //AF_INET æ˜¯ ä¸€ä¸ªå®ï¼Œè¡¨ç¤ºä½¿ç”¨ipv4åè®®
-  //SOCK_DGRAMè¡¨ç¤ºä½¿ç”¨UDPåè®®
+  //1.ÏÈ´´½¨Ò»¸ösocket
+  //AF_INET ÊÇ Ò»¸öºê£¬±íÊ¾Ê¹ÓÃipv4Ğ­Òé
+  //SOCK_DGRAM±íÊ¾Ê¹ÓÃUDPĞ­Òé
  //int socket(int domain, int type, int protocol);
   int sock = socket(AF_INET,SOCK_DGRAM,0);
-    if(sock < 0) {  //åˆ›å»ºå¤±è´¥
+    if(sock < 0) {  //´´½¨Ê§°Ü
       perror("socket");
       return 1;
     }
-  //2.æŠŠå½“å‰çš„socketç»‘å®šä¸Šä¸€ä¸ªip + ç«¯å£å·
-  sockaddr_in addr;   //è¿™æ˜¯ä¸€ä¸ªç»“æ„ä½“
+  //2.°Ñµ±Ç°µÄsocket°ó¶¨ÉÏÒ»¸öip + ¶Ë¿ÚºÅ
+  sockaddr_in addr;   //ÕâÊÇÒ»¸ö½á¹¹Ìå
   addr.sin_family = AF_INET;
-  //ipåœ°å€ä¹Ÿæ˜¯ä¸€ä¸ªæ•´æ•°ï¼Œä¹Ÿéœ€è¦è½¬æˆç½‘ç»œå­—èŠ‚åºï¼Œä½†æ˜¯inet_addrå¸®æˆ‘ä»¬è½¬å¥½äº†
-  addr.sin_addr.s_addr  = inet_addr("0.0.0.0");   //è¿™ä¸ªæ˜¯å¯ä»¥æ¥æ”¶çš„IPåœ°å€ï¼Œ0ä»£è¡¨æ‰€æœ‰çš„IPåœ°å€
- //ä¸»æœºå­—èŠ‚åºçš„æ•°å­—è½¬æˆç½‘ç»œå­—èŠ‚åº
-  addr.sin_port = htons(9090);                   //9090ç«¯å£æ— ç‰¹æ®Šå«ä¹‰ï¼Œæ¯”è¾ƒä¸å¸¸ç”¨
+  //ipµØÖ·Ò²ÊÇÒ»¸öÕûÊı£¬Ò²ĞèÒª×ª³ÉÍøÂç×Ö½ÚĞò£¬µ«ÊÇinet_addr°ïÎÒÃÇ×ªºÃÁË
+  addr.sin_addr.s_addr  = inet_addr("0.0.0.0");   //Õâ¸öÊÇ¿ÉÒÔ½ÓÊÕµÄIPµØÖ·£¬0´ú±íËùÓĞµÄIPµØÖ·
+ //Ö÷»ú×Ö½ÚĞòµÄÊı×Ö×ª³ÉÍøÂç×Ö½ÚĞò
+  addr.sin_port = htons(9090);                   //9090¶Ë¿ÚÎŞÌØÊâº¬Òå£¬±È½Ï²»³£ÓÃ
   int ret = bind(sock,(sockaddr*)&addr,sizeof(addr));
   if(ret < 0){
     perror("bind");
     return 1;
   }
   printf("sever start ok!\n");
-  //3.å¤„ç†æœåŠ¡å™¨æ”¶åˆ°çš„è¯·æ±‚
+  //3.´¦Àí·şÎñÆ÷ÊÕµ½µÄÇëÇó
   while(true){
-    //a)è¯»å–å®¢æˆ·ç«¯çš„è¯·æ±‚
-    //é¢å‘æ•°æ®æŠ¥çš„å‡½æ•°æ¥å£
+    //a)¶ÁÈ¡¿Í»§¶ËµÄÇëÇó
+    //ÃæÏòÊı¾İ±¨µÄº¯Êı½Ó¿Ú
     sockaddr_in peer;
-    socklen_t len = sizeof(peer);  //è¾“å…¥è¾“å‡ºå‚æ•°
-    char buf[1024] = {0};   //ç¼“å†²åŒº
+    socklen_t len = sizeof(peer);  //ÊäÈëÊä³ö²ÎÊı
+    char buf[1024] = {0};   //»º³åÇø
     ssize_t n=recvfrom(sock,buf,sizeof(buf)-1,0,
         (sockaddr*)&peer,&len);
     if( n < 0)
@@ -46,9 +46,9 @@ int main()
       continue;
     }
     buf[n] = '\0';
-    //b) æ ¹æ®è¯·æ±‚è®¡ç®—å“åº”
-    //å“åº”å’Œè¯·æ±‚ç›¸åŒ
-    //c) æŠŠå“åº”å†™å›å®¢æˆ·ç«¯
+    //b) ¸ù¾İÇëÇó¼ÆËãÏìÓ¦
+    //ÏìÓ¦ºÍÇëÇóÏàÍ¬
+    //c) °ÑÏìÓ¦Ğ´»Ø¿Í»§¶Ë
     n = sendto(sock,buf,strlen(buf),0,(sockaddr*)&peer,len);
     if(n < 0)
     {
@@ -61,4 +61,5 @@ int main()
   close(sock);
   return 0;
 }
+
 
