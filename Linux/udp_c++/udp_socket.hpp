@@ -1,93 +1,127 @@
-#pragma once 
-#include<cstdio>
-#include<string>
-#include<cstring>
-#include<unistd.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include<arpa/inet.h>
-
+#pragma once
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <cassert>
+#include <string>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+typedef struct sockaddr sockaddr;
+typedef struct sockaddr_in sockaddr_in;
 class UdpSocket {
-  public:
-    UdpSocket(): fd_ (-1){
-
-    }
-    //æ‰“å¼€ä¸€ä¸ªudp çš„socket
-    //è¿”å›trueè¡¨ç¤ºåˆ›å»ºæˆåŠŸï¼Œfalseè¡¨ç¤ºå¤±è´¥
-    bool Socket()
-    {
-      fd_ = socket(AF_INET,SOCK_DGRAM,0);
-      if(fd_ < 0)
-      {
-        perror("socket");
-        return false;   //å¤±è´¥
-      }
-      return true;
-    }
-    
-    bool Close(){  
-      if(fd_ != -1) //ä¸æ˜¯éæ³•å€¼ï¼Œå…³é—­
-      {
-        close(fd_);
-      }
-      return true;
-    }
-    bool Bind(const std::string& ip,uint16_t port){
-    //æ ¹æ®å‚æ•°æ„é€ ä¸€ä¸ªsockaddr_inç»“æ„
-    //è°ƒç”¨bind
-    sockaddr_in addr;
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = inet_addr(ip.c_str()); //è¿™é‡Œc_stræ˜¯å°†ipè½¬ä¸ºcå­—ç¬¦
+public:
+UdpSocket() : fd_(-1) {}
+ //1.´´½¨Ì×½Ó×Ö
+bool Socket() {
+	fd_ = socket(AF_INET,SOCK_DGRAM,0)
+	/*
+  socketº¯Êı£ºint socket(int domain, int type, int protocol);
+	domain£ºIPĞ­Òé£ºÑ¡ÔñIPv4---AF_INET
+	type£ºÖ¸socketÀàĞÍ
+		SOCK_STREAM£ºÃæÏò×Ö½ÚÁ÷---TCP
+		SOCK_DGRAM: ÃæÏòÊı¾İ±¨----UDP
+	protocol:
+        ÒòÎªÖ¸¶¨ÁËtype£¬ËùÒÔÕâÀïÒ»°ãÈ¡Áã
+	*/
+	if(fd_ < 0)
+	{
+		//ÅĞ¶Ï·µ»ØÖµÊÇ·ñÎªÕæ
+		perror("socket error");
+		return false;
+	}
+	return true;
+}
+//¹Ø±ÕÌ×½Ó×Ö
+bool Close(){
+	close(fd_);
+	//¹Ø±ÕÌ×½Ó×Ö£¬²ÎÊıÊÇsocketÃèÊö·û
+	return true;
+}
+//°ó¶¨¶Ë¿ÚĞÅÏ¢(ÏÈ×ª»»ip×Ö½ÚĞò)
+bool Bind(const std::string& ip,uint16_t port){
+	sockaddr_in addr;
+	addr.sin_family = AF_INET;  //ÓÃÀ´¶¨ÒåÊÇÄÄÖÖµØÖ·´Ø
+    addr.sin_addr.s_addr = inet_addr(ip.c_str());  //±£´æipµØÖ·ĞÅÏ¢£¬32Î»ÕûÊı
+    addr.sin_port = htons(port);   //±£´æ¶Ë¿ÚºÅ
     int ret = bind(fd_,(sockaddr*)&addr,sizeof(addr));
-    if(ret<0){
-      perror("bind");
-      return false;
-    }
-      return true;
-    }
+	/*
+    º¯ÊıÔ­ĞÍ£º
+        int bind(int socket, const struct sockaddr *address,
+    socklen_t address_len);
+	*/
+	if(ret < 0)
+	{
+		perror("bind");
+		return false;
+	}
+	return true;
+}
+//½ÓÊÕÏûÏ¢
+bool RecvFrom(std::string* buf,std::string* ip = NULL,uint16_t* port = NULL){
+	char tmp[1024*10] = {0};
+	sockaddr_in peer;
+	socklen_t len = sizeof(peer);
+	ssize_t read_size = recvfrom(fd_,tmp,sizeof(tmp)-1,0,(sockaddr*)&peer,&len);
+	/*
+	º¯ÊıÔ­ĞÍ£º
+	int recvfrom(int s, void *buf, int len, unsigned int flags,
+struct sockaddr *from, int *fromlen);
 
-    //è¿”å›:
-    //1.è¯»åˆ°çš„æ•°æ®
-    //2.å¯¹æ–¹çš„ipåœ°å€(å¯ä»¥ä¸å…³æ³¨)
-    //3.å¯¹æ–¹çš„ç«¯å£å·(å¯ä»¥ä¸å…³æ³¨)
-    bool RecvFrom(std::string* msg,std::string* ip = NULL,
-        uint16_t* port = NULL){
-      char buf[1024 * 10] = {0};
-      sockaddr_in peer;
-      socklen_t len = sizeof(peer);
-      ssize_t n  = recvfrom(fd_,buf,sizeof(buf)-1,0,
-          (sockaddr*)&peer,&len);
-      if(n < 0){
-        perror("recvfrom");
-        return false;
-      }
-      *msg = buf; 
-      //msg->assign(buf);
-      if(ip!=NULL){
-        *ip = inet_ntoa(peer.sin_addr);  
-        //æ•°å­—ç‰ˆæœ¬çš„è½¬æˆç‚¹åˆ†åè¿›åˆ¶ï¼Œç„¶åèµ‹å€¼ç»™å­—ç¬¦ä¸²
-      }
-      if(port!=NULL){
-        *port = ntohs(peer.sin_port);
-        //ç½‘ç»œåºè½¬æˆä¸»æœºåº
-      }
-      return true;
-    }
-
-    bool SendTo(const std::string& msg,
-        const std::string& ip,uint16_t port){
-      sockaddr_in addr;
-      addr.sin_family = AF_INET;
-      addr.sin_addr.s_addr = inet_addr(ip.c_str());
-      addr.sin_port = htons(port);
-      ssize_t n = sendto(fd_,msg.c_str(),msg.size(),
-          0,(sockaddr*)&addr,sizeof(addr));
-      if(n < 0){
-        perror("sendto");
-        return false;
-      }
-      return true;
-    }
-  private:
-    int fd_;
+		s:socketÃèÊö·û
+		buf£º½ÓÊÕÊı¾İ»º³åÇø
+		len:»º³åÇøµÄ³¤¶È
+		flags£ºµ÷ÓÃ²Ù×÷·½Ê½
+		from£ºÊı¾İÔ´ipµØÖ·
+		fromlen£ºfrom»º³åÇøµÄ³¤¶È
+		
+	*/
+	if(read_size < 0){  //Ã»ÓĞÊı¾İ
+		perror("recvfrom");
+		return false;
+	}
+	buf->assign(tmp,read_size);
+	if(ip!=NULL)
+	{
+		*ip = inet_ntoa(peer.sin_addr);
+		//½«Ô´ipµØÖ·£¨32Î»ÍøÂç×Ö½ÚĞòµÄ¶ş½øÖÆIP£©×ª»»³Ìµã·ÖÊ®½øÖÆ
+	}
+	if(port!=NULL)
+	{
+		*port = ntohs(peer.sin_port);
+		//½«ÍøÂç×Ö½ÚĞò×ª»¯³ÉÖ÷»ú×Ö½ÚĞò
+		/*
+			htonl()--"Host to Network Long"
+    		ntohl()--"Network to Host Long"
+    		htons()--"Host to Network Short"
+    		ntohs()--"Network to Host Short"
+		*/
+	}
+	return true;
+}
+//·¢ËÍÏûÏ¢
+bool SendTo(const std::string& buf,const std::string& ip,uint16_t port){
+	sockaddr_in addr;
+	
+	addr.sin_family = AF_INET;   //IPĞ­Òé´Ø
+	addr.sin_addr.s_addr = inet_addr(ip.c_str());
+	addr.sin_port = htons(port);
+	//½«Ö÷»ú×Ö½ÚĞò×ª»¯ÍøÂç×Ö½ÚĞò
+	ssize_t write_size = sendto(fd_,buf.data(),buf.size(),0,(sockaddr*)&addr,sizeof(addr));
+    /*
+         int sendto (int s, const void *buf, int len,unsigned int flags,
+    const struct sockaddr *to, int tolen);
+	  buf.data()---¡··µ»ØÒ»¸ö×Ö·û´®Ö¸Õë
+	  buf.size()--->´óĞ¡
+	*/
+	if(write_size < 0)
+	{
+		perror("sendto");
+		return false;
+	}
+	return true;
+}
+private:
+	int fd_;
 };

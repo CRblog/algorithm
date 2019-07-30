@@ -1,52 +1,64 @@
-#pragma once 
-#include<cassert>
-#include<functional>
-#include"udp_socket.hpp"
+//udp_server
 
-//é€šç”¨çš„UdpæœåŠ¡å™¨
-//1.è¯»å–è¯·æ±‚
-//2.æ ¹æ®è¯·æ±‚è®¡ç®—å“åº”
-//3.æŠŠå“åº”å†™å›åˆ°å®¢æˆ·ç«¯
-//typedef void(*Handler)(const std::string& req,
-//              std::string* resp);
-//c++11---å…¼å®¹ä»¿å‡½æ•°å’Œå‡½æ•°æŒ‡é’ˆ
-typedef std::function<void(const std::string&,std::string*)> Handler;
+//¹ı³Ì£º
+//1.´´½¨socket
+//2.°ó¶¨µØÖ·ĞÅÏ¢£¬¶Ë¿Ú£¬ipÈ·¶¨£¬ÒÔ±ãÓÚ¿Í»§¶ËÄÜ¹»Á¬½Óµ½Ö¸¶¨µÄ·şÎñÆ÷
+//3.½øÈëÖ÷Ñ­»·£¬Ñ­»·½ÓÊÕ£¬recvfrom
+//4.sendto--->ÏìÓ¦¿Í»§¶Ë·¢À´µÄĞÅÏ¢
+//5.¹Ø±Õsocket
+#pragma once
+#include "udp_socket.hpp"
+#include<functional>
+
+typedef std::function<void (const std::string&,std::string* resp)> Handler;
+//typedef void (*Handler)(const std::string& req,std::string* resp);
 
 class UdpServer{
 public:
-  UdpServer(){
-    assert(sock_.Socket());
+	UdpServer()
+	{
+		assert(sock_.Socket());//´´½¨socket
+	}
+   ~UdpServer()
+	{
+		sock_.Close();
+	}
+bool Start(const std::string& ip,uint16_t port,Handler handler){
+	//1.´´½¨socket
+	//2.°ó¶¨¶Ë¿ÚºÅ
+	bool ret = socket_Bind(ip,port);
+	//°ó¶¨µØÖ·ĞÅÏ¢
+	if(!ret){
+		return false;
+	}
+	//3.½øÈëÊÂ¼şÑ­»·
+	for(;;){
+		//4.Ñ­»·½ÓÊÕÇëÇó()
+		std::string req;
+		std::string remote_ip;
+		uint16_t remote_port = 0;
 
-  }
-  ~UdpServer(){
+		bool ret = sock_.RecvFrom(&req,&remote_ip,&remote_port);
+		//½ÓÊÕÇëÇó
+		if(!ret){
+			continue;
+		}
+		std::string resp;
+		//5.¸ù¾İÇëÇó¼ÆËãÏìÓ¦£¨ÏìÓ¦µÄ´¦Àí£©
+		handler(req,&resp);
 
-  }
-  bool Start(const std::string& ip,uint16_t port,
-      Handler handler){
-    //1.åˆ›å»ºsocketï¼ˆä¸Šé¢å·²ç»å®Œæˆï¼‰
-    //2.ç»‘å®šç«¯å£å·
-    bool ret = sock_.Bind(ip,port);
-    if(!ret){
-      return false;
-    }
-
-    //3.è¿›å…¥ä¸€ä¸ªæ­»å¾ªç¯
-    while(true){
-      //å¤„ç†æ¯ä¸ªè¯·æ±‚
-      //1ï¼‰è¯»å–è¯·æ±‚
-      std::string req;
-      std::string peer_ip;
-      uint16_t peer_port;
-      sock_.RecvFrom(&req,&peer_ip,&peer_port);
-      //2ï¼‰æ ¹æ®è¯·æ±‚è®¡ç®—å“åº”
-      std::string resp;
-      handler(req,&resp);
-      //3ï¼‰æŠŠå“åº”è¿”å›å®¢æˆ·ç«¯
-      sock_.SendTo(resp,peer_ip,peer_port);
-    }
-
-  }
-  
+		//6.·µ»ØÏìÓ¦¸ø¿Í»§¶Ë
+		sock_.SendTo(resp,remote_ip,remote_port);
+		printf("[%s:%d] req: %s \n",remote_ip.c_str(),remote_port,
+			req.c_str(),resp.c_str());
+	}
+	sock_.Close();
+	//¹Ø±ÕÁ¬½Ó
+	return true;
+}
 private:
-  UdpSocket sock_;
+	UdpSocket sock_;
+
 };
+
+
