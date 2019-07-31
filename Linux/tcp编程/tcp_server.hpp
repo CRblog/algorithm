@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include<functional>
 #include "tcp_socket.hpp"
 
@@ -18,17 +18,17 @@ public:
     }
     bool Start(const std::string& ip,uint16_t port,Handler handler)
     {
-    //1.åˆ›å»ºä¸€ä¸ªsocket
+    //1.´´½¨Ò»¸ösocket
       CHECK_RET(listen_sock_.Socket());
-    //2.ç»‘å®šç«¯å£å·
+    //2.°ó¶¨¶Ë¿ÚºÅ
       CHECK_RET(listen_sock_.Bind(ip,port));
-    //3.è¿›è¡Œç›‘å¬
+    //3.½øĞĞ¼àÌı
     CHECK_RET(listen_sock_.Listen());
     printf("Server Start OK\n");
-    //4.è¿›å…¥ä¸»å¾ªç¯
+    //4.½øÈëÖ÷Ñ­»·
     while(true)
     {
-        //5.é€šè¿‡accept è·å–åˆ°ä¸€ä¸ªè¿æ¥
+        //5.Í¨¹ıaccept »ñÈ¡µ½Ò»¸öÁ¬½Ó
         TcpSocket client_sock;
         std::string ip;
         uint16_t port;
@@ -37,10 +37,10 @@ public:
         {
           continue;
         }
-        //6.å’Œå®¢æˆ·ç«¯è¿›è¡Œå…·ä½“çš„æ²Ÿé€š
+        //6.ºÍ¿Í»§¶Ë½øĞĞ¾ßÌåµÄ¹µÍ¨
       while(true)
       {
-        //a)è¯»å–è¯·æ±‚
+        //a)¶ÁÈ¡ÇëÇó
         std::string req;
         int r = client_sock.Recv(&req);
         if(r < 0)
@@ -49,18 +49,19 @@ public:
         }
         if(r == 0)
         {
-          //å¯¹ç«¯å…³é—­äº†socket
+          //¶Ô¶Ë¹Ø±ÕÁËsocket
           client_sock.Close();
-          printf("[%s:%d]å¯¹ç«¯å…³é—­äº†è¿æ¥\n",ip.c_str(),port);
+          printf("[%s:%d]¶Ô¶Ë¹Ø±ÕÁËÁ¬½Ó\n",ip.c_str(),port);
           break;
         }
-        printf("[%s:%d]å®¢æˆ·ç«¯å‘é€äº†:%s\n",ip.c_str(),port,req.c_str());
-        //b)æ ¹æ®è¯·æ±‚è®¡ç®—å“åº”
+        printf("[%s:%d]¿Í»§¶Ë·¢ËÍÁË:%s\n",ip.c_str(),port,req.c_str());
+        //b)¸ù¾İÇëÇó¼ÆËãÏìÓ¦
         std::string resp;
         handler(req,&resp);
-        //c)æŠŠå“åº”å†™å›å¯¹ç«¯
+        //c)°ÑÏìÓ¦Ğ´»Ø¶Ô¶Ë
         client_sock.Send(resp);
       }
     }
     }
 };
+

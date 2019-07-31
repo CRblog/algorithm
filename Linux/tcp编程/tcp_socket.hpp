@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include<cstdio>
 #include<cstring>
 #include<string>
@@ -6,7 +6,7 @@
 #include<sys/socket.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
-//è¿æ¥ï¼šäº”å…ƒç»„   æºç«¯å£ï¼Œç›®çš„ç«¯å£ï¼Œæºipï¼Œç›®çš„ipï¼Œåè®®
+//Á¬½Ó£ºÎåÔª×é   Ô´¶Ë¿Ú£¬Ä¿µÄ¶Ë¿Ú£¬Ô´ip£¬Ä¿µÄip£¬Ğ­Òé
 class TcpSocket{
 public:
 
@@ -32,7 +32,7 @@ public:
     return true;
   }
   bool Listen(){
-    //è¿›å…¥ç›‘å¬çŠ¶æ€
+    //½øÈë¼àÌı×´Ì¬
     int ret = listen(fd_,10);
     if(ret < 0){
       perror("listen");
@@ -40,14 +40,14 @@ public:
     }
     return true;
   }
-  //è¿™ä¸ªAPIæ˜¯ç»™æœåŠ¡å™¨ä½¿ç”¨çš„
+  //Õâ¸öAPIÊÇ¸ø·şÎñÆ÷Ê¹ÓÃµÄ
   bool Accept(TcpSocket* peer,std::string* ip = NULL,
               uint16_t* port = NULL){
-    //acceptä»è¿æ¥é˜Ÿåˆ—ä¸­å–ä¸€ä¸ªè¿æ¥åˆ°ç”¨æˆ·ä»£ç ä¸­
-    //å¦‚æœé˜Ÿåˆ—ä¸­æ²¡æœ‰è¿æ¥ï¼Œå°±ä¼šé˜»å¡(é»˜è®¤è¡Œä¸º)
+    //accept´ÓÁ¬½Ó¶ÓÁĞÖĞÈ¡Ò»¸öÁ¬½Óµ½ÓÃ»§´úÂëÖĞ
+    //Èç¹û¶ÓÁĞÖĞÃ»ÓĞÁ¬½Ó£¬¾Í»á×èÈû(Ä¬ÈÏĞĞÎª)
     sockaddr_in peer_addr;
     socklen_t len = sizeof(peer_addr);
-    //è¿”å›å€¼ä¹Ÿæ˜¯ä¸€ä¸ª socket 
+    //·µ»ØÖµÒ²ÊÇÒ»¸ö socket
     int client_sock = accept(fd_,(sockaddr*)&peer_addr,&len);
     if(client_sock < 0){
       perror("accept");
@@ -67,9 +67,9 @@ public:
     msg->clear();
     char buf[1024* 10] = {0};
     ssize_t n = recv(fd_,buf,sizeof(buf)-1,0);
-    //recvçš„è¿”å›å€¼ï¼šå¦‚æœè¯»å–æˆåŠŸï¼Œè¿”å›ç»“æœä¸ºè¯»åˆ°çš„å­—èŠ‚æ•°
-    //å¦‚æœè¯»å–å¤±è´¥ï¼Œè¿”å›ç»“æœä¸º-1
-    //å¦‚æœå¯¹ç«¯å…³é—­äº†ï¼Œsocketè¿”å›ç»“æœä¸º0
+    //recvµÄ·µ»ØÖµ£ºÈç¹û¶ÁÈ¡³É¹¦£¬·µ»Ø½á¹ûÎª¶Áµ½µÄ×Ö½ÚÊı
+    //Èç¹û¶ÁÈ¡Ê§°Ü£¬·µ»Ø½á¹ûÎª-1
+    //Èç¹û¶Ô¶Ë¹Ø±ÕÁË£¬socket·µ»Ø½á¹ûÎª0
     if(n < 0){
         perror("recv");
         return -1;
@@ -87,7 +87,7 @@ public:
     }
     return true;
   }
-  //ç»™å®¢æˆ·ç«¯ä½¿ç”¨
+  //¸ø¿Í»§¶ËÊ¹ÓÃ
   bool Connect(const std::string& ip,uint16_t port){
     sockaddr_in addr;
     addr.sin_family = AF_INET;
@@ -109,3 +109,4 @@ public:
 private:
   int fd_;
 };
+
